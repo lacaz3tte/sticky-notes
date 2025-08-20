@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: sticky-notes-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-sticky_notes_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - sticky-notes-network
+    restart: unless-stopped
+
+  # Application
+  app:
+    build: .
+    container_name: sticky-notes-app
+    environment:
+      NODE_ENV: development
+      DOCKER_ENV: "true"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-sticky_notes_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_change_in_production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      PORT: ${PORT:-3000}
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: >
+      sh -c "
+      echo 'Waiting for PostgreSQL to be ready...' &&
+      until nc -z postgres 5432; do
+        sleep 1
+      done &&
+      echo 'PostgreSQL is ready!' &&
+      npm install &&
+      npm run db:migrate &&
+      npm run dev
+      "
+    networks:
+      - sticky-notes-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+
+networks:
+  sticky-notes-network:
+    driver: bridge
