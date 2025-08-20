@@ -39,7 +39,7 @@
 ### 1. Клонирование и установка
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/lacaz3tte/sticky-notes.git
 
 переименовать .env.example в .env
 
