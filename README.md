@@ -46,5 +46,35 @@ git clone https://github.com/lacaz3tte/sticky-notes.git
 cd sticky-notes
 npm install
 
-### 2. Запуск через Docker 
+```
+
+### 2. Запуск миграций
+
+```bash
+npm run db:migrate
+```
+
+### 3. Запуск сидеров
+
+```bash
+npm run seed
+```
+
+### 4. Запуск приложения
+
+```bash
+npm run dev
+```
+
+### 5. Запуск через Docker 
+
+```bash
 docker-compose up -d
+```
+
+
+
+
+
+
+
