@@ -41,7 +41,7 @@
 ```bash
 git clone https://github.com/lacaz3tte/sticky-notes.git
 
-переименовать .env.example в .env
+ren ".env.example" ".env"
 
 cd sticky-notes
 npm install
