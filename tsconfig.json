@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "types": ["node", "express", "jest"]
+  },
+  "include": ["src/**/*", "src/types/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
